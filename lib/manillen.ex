@@ -10,23 +10,22 @@ defmodule Manillen do
   end
 
   def handle_call({:play, player, card}, _from, state) do
-    case state do
-      [] -> {:reply, :ok, [{player, card}]}
-      [{^player, _}] -> {:reply, {:error, :await_turn}, state}
-      [{_, ^card}] -> {:reply, {:error, :duplicate_card}, state}
-      _ -> {:reply, :ok, [player | state]}
+    new_state = [{player, card} | state]
+    cond do
+      duplicate_player(new_state) -> {:reply, {:error, :await_turn}, state}
+      duplicate_card(new_state) -> {:reply, {:error, :duplicate_card}, state}
+      true -> {:reply, :ok, new_state}
     end
-    
   end
 
-  # def validate_trick([_, _, _, _] = cards) do
-  #   unique_cards = Enum.uniq(cards)
+  defp duplicate_player(state) do
+    players = Enum.map(state, fn {player, _} -> player end)
+    players != Enum.uniq(players)
+  end
 
-  #   case unique_cards == cards do
-  #     false -> {:error, :duplicate_card}
-  #     true -> :ok
-  #   end
-  # end
+  defp duplicate_card(state) do
+    cards = Enum.map(state, fn {_, card} -> card end)
+    cards != Enum.uniq(cards)
+  end
 
-  # def validate_trick(_), do: {:error, :incorrect_number_of_moves}
 end

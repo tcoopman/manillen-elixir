@@ -27,9 +27,17 @@ defmodule ManillenTest do
       assert {:error, :duplicate_card} == Manillen.play(:player2, {:hearts, :eight})
     end
 
+    test "The same card cannot be played twice" do
+      card = {:hearts, :eight}
+      :ok = Manillen.play(:player1, card)
+      :ok = Manillen.play(:player2, {:hearts, :seven})
+      :ok = Manillen.play(:player3, {:hearts, :nine})
+      assert {:error, :duplicate_card} == Manillen.play(:player4, card)
+    end
+
     test "A player cannot play twice in a row" do
       assert :ok = Manillen.play(:player1, {:hearts, :eight})
-      assert {:error, :await_turn} = Manillen.play(:player1, {:hearts, :seven})
+      assert {:error, :await_turn} == Manillen.play(:player1, {:hearts, :seven})
     end
   end
 end
