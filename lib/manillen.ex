@@ -2,15 +2,21 @@ defmodule Manillen do
   use GenServer
 
   def start_link() do
-    GenServer.start_link(__MODULE__, nil, name: :manillen)
+    GenServer.start_link(__MODULE__, [], name: :manillen)
   end
 
   def play(player, card) do
     GenServer.call(:manillen, {:play, player, card})
   end
 
-  def handle_call({:play, _player, _card}, _from, state) do
-    {:reply, :ok, state}
+  def handle_call({:play, player, card}, _from, state) do
+    case state do
+      [] -> {:reply, :ok, [{player, card}]}
+      [{^player, _}] -> {:reply, {:error, :await_turn}, state}
+      [{_, ^card}] -> {:reply, {:error, :duplicate_card}, state}
+      _ -> {:reply, :ok, [player | state]}
+    end
+    
   end
 
   # def validate_trick([_, _, _, _] = cards) do

@@ -8,13 +8,28 @@ defmodule ManillenTest do
 
   describe "Validate a trick" do
     setup do
-      Manillen.start_link()
+      {:ok, _pid} = Manillen.start_link()
 
       :ok
     end
 
     test "A first valid move" do
+      assert :ok = Manillen.play(:player1, {:hearts, :eight})
+    end
+
+    test "A second valid move" do
+      assert :ok = Manillen.play(:player1, {:hearts, :eight})
+      assert :ok = Manillen.play(:player2, {:hearts, :seven})
+    end
+
+    test "The second player cannot play the same card" do
       :ok = Manillen.play(:player1, {:hearts, :eight})
+      assert {:error, :duplicate_card} == Manillen.play(:player2, {:hearts, :eight})
+    end
+
+    test "A player cannot play twice in a row" do
+      assert :ok = Manillen.play(:player1, {:hearts, :eight})
+      assert {:error, :await_turn} = Manillen.play(:player1, {:hearts, :seven})
     end
   end
 end
