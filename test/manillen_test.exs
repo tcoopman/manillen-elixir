@@ -22,5 +22,10 @@ defmodule ManillenTest do
                  {:hearts, :nine}
                ])
     end
+
+    test "invalid trick, not enough moves" do
+      assert {:error, :incorrect_number_of_moves} =
+        Manillen.validate_trick([])
+    end
   end
 end
