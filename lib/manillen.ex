@@ -20,7 +20,8 @@ defmodule Manillen do
 
   defp duplicate_player(state) do
     players = Enum.map(state, fn {player, _} -> player end)
-    players != Enum.uniq(players)
+    last_players = Enum.chunk_every(players, 4) |> List.last()
+    last_players != Enum.uniq(last_players)
   end
 
   defp duplicate_card(state) do
